@@ -3,62 +3,65 @@
 var SkillList = React.createClass({
   getInitialState: function() {
     return {
-      message: "",
-      savedMessages: []
+      skills: [
+        { skillName: 'スキル', year: 0, showDel: false }
+      ]
     };
   },
 
-  updateMessage: function(message) {
-    this.setState({ message: message });
-  },
-
-  saveMessage: function(message) {
-    var messages = this.state.savedMessages.concat(message);
-    this.setState({ savedMessages: messages });
+  addNewSkill: function() {
+    var skills = this.state.skills.concat({ skillName: '', year: 0, showDel: false });
+    this.setState({ skills: skills });
   },
 
   render: function() {
     return (
       <div>
-        <MessageInput onChange={this.updateMessage} onSave={this.saveMessage} />
-        <Skill message={this.state.message} savedMessages={this.state.savedMessages} />
+        <Skill skills={this.state.skills} addNewSkill={this.addNewSkill} />
       </div>
     );
-  }
-});
-
-var MessageInput = React.createClass({
-  _onChange: function(e) {
-    this.props.onChange(e.target.value);
-  },
-
-  _onKeyDown: function(e) {
-    // 13 == Enter Key Code
-    if (e.keyCode === 13) {
-      this.props.onSave(e.target.value);
-      e.target.value = "";
-    }
-  },
-
-  render: function() {
-    return <input type="text" onChange={this._onChange} onKeyDown={this._onKeyDown}/>;
   }
 });
 
 var Skill = React.createClass({
   render: function() {
-    var messages = this.props.savedMessages.map(
-      function(message) {
-        return <li>{message}</li>;
+    var that = this;
+    var skills = this.props.skills.map(
+      function(skill) {
+        console.log('hoge');
+        return (
+          <tr>
+            <td><SkillInput skillName={skill.skillName} addNewSkill={that.props.addNewSkill} /></td>
+            <td>{skill.year}</td>
+            <td>削除ボタン</td>
+          </tr>
+        );
       }
     );
 
     return (
-      <div>
-        <p>{this.props.message}</p>
-        <ul>{messages}</ul>
-      </div>
+      <table>
+        <tr>
+          <th>スキル</th>
+          <th>経験年数</th>
+        <th>---</th>
+        </tr>
+        {skills}
+      </table>
     );
+  }
+});
+
+var SkillInput = React.createClass({
+  _onKeyDown: function(e) {
+    // 13 == Enter Key Code
+    if (e.keyCode === 13) {
+      this.props.addNewSkill();
+    }
+  },
+
+  render: function() {
+    return <input type="text" onKeyDown={this._onKeyDown} defaultValue={this.props.skillName} />;
   }
 });
 
